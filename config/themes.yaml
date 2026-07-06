@@ -1,0 +1,53 @@
+# Themes the news agent monitors. Edit freely.
+# Each theme is independent: if it has no new/relevant items in a run, it is
+# omitted entirely (no empty sections, no "nothing here" per theme).
+#
+# Per-theme fields:
+#   id            unique slug (used as the key in memory/history.json)
+#   name          bold header shown in Telegram
+#   mode          news   -> report items that are NEW since last_run (default)
+#                 events -> report UPCOMING events within event_window_days
+#   goal          what "relevant" means for this theme (the agent's brief)
+#   constraints   hard rules the agent must respect (optional)
+#   sources       list of { url, type } where type is:
+#                   living        -> stable URL, changing content (timeline/homepage).
+#                                    Dedup by content fingerprint + date, NEVER by URL.
+#                   permalink_feed-> index page whose entries are stable permalinks.
+#                   permalink     -> a single stable article URL.
+#   search_queries extra web searches to discover items beyond the fixed sources
+#   event_window_days  (events mode only) how far ahead to look
+#   fallback_image (optional) image URL to attach if an item has no image of its own
+
+defaults:
+  recency_days: 7         # news mode: only items dated within this window / since last_run
+  max_items: 4            # max items (messages) per theme per run
+
+themes:
+  # Example theme — AI & developer tools (coding agents, model releases,
+  # GitHub rising stars). Replace or add your own themes below.
+  - id: ai-dev-tools
+    name: "🛠️ AI & Dev Tools"
+    mode: news
+    goal: >
+      Practical AI developer tooling worth adopting: AI coding agents (Claude
+      Code, Cursor, Copilot, etc.), agent frameworks, MCP servers/ecosystem,
+      IDE AI features, and model APIs/SDKs for builders. Also include notable
+      new model releases, framed by what they mean for people who build with
+      them. AND fast-rising / trending GitHub repos — "rising stars" gaining
+      stars quickly — favouring AI / developer-tooling projects but allowing a
+      standout repo in any domain if it is genuinely blowing up.
+    constraints: >
+      Prefer real, usable capability over hype/announcements-of-announcements.
+      For model releases, lead with what changes for builders. For GitHub
+      rising stars, prefer repos with a clear recent surge, not long-popular
+      staples. Omit the theme if nothing genuinely new this run.
+    sources:
+      - url: "https://github.com/trending?since=weekly"
+        type: living
+      - url: "https://news.ycombinator.com/"
+        type: living
+    search_queries:
+      - "Claude Code OR Cursor OR Copilot new feature"
+      - "new AI coding agent OR agent framework"
+      - "new LLM model release developers"
+      - "trending GitHub AI developer tool this week"
