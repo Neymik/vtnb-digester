@@ -11,13 +11,15 @@ Do the following, in order:
    provided as the environment variables `TELEGRAM_BOT_TOKEN` and
    `TELEGRAM_CHAT_ID` — the send scripts read them from the environment, so you do
    NOT need a `.env` file.
-2. After the send completes and `memory/history.json` has been updated, persist it:
+2. After the send completes and `memory/history.json` has been updated, commit it:
 
    ```bash
    git add memory/history.json
    git commit -m "chore: update sent-history ($(date -u +%FT%TZ))"
-   git push origin main
    ```
 
-   This is required — it is the only way next week's run sees the updated dedup
-   state. If nothing changed in `memory/history.json`, skip the commit.
+   Do NOT push to `main` directly — the routine can only push to its own
+   `claude/*` branch, and a GitHub Actions workflow (`.github/workflows/
+   merge-routine-state.yml`) auto-merges that branch into `main`. Committing is
+   enough; the routine publishes the commit to its branch. If nothing changed in
+   `memory/history.json`, skip the commit.

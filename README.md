@@ -18,6 +18,7 @@ This is a **template**. Click **Use this template** to create your own instance.
 | `memory/history.json` | The ONLY state between runs (dedup). See `MEMORY.md`. |
 | `bin/run.sh` | Local entrypoint (lock, env, logging, alerts) → `claude -p`. |
 | `bin/send_telegram.sh` / `bin/send_photo.sh` | Telegram senders. |
+| `.github/workflows/merge-routine-state.yml` | Auto-merges the routine's `claude/*` state branch into `main`. |
 | `tests/` | `bash tests/run_all.sh`. |
 
 ## Quick start (local test)
@@ -49,11 +50,14 @@ Runs on Anthropic's cloud under your Claude subscription, on a weekly schedule.
    Note: there is no secrets store yet — these sit in the routine's env config,
    visible to anyone who can edit the routine.
 4. **Network access:** allowlist `api.telegram.org` (GitHub is already trusted).
-5. **Branch push:** enable "unrestricted branch pushes" so the routine can push
-   the updated `memory/history.json` back to `main`.
+5. **State merge:** ensure **GitHub Actions is enabled** for your repo. The
+   included `.github/workflows/merge-routine-state.yml` auto-merges the routine's
+   `claude/*` state branch into `main`. (The routine can only push to `claude/*`
+   branches — the "unrestricted branch pushes" toggle does **not** grant direct
+   `main` pushes, so this workflow does the landing.)
 6. **Schedule:** cron in your local timezone, e.g. `30 9 * * 1` = Monday 09:30.
 7. **Prompt:** point the routine at `agent/cloud-run.md` (send for real, then
-   commit & push `memory/history.json`).
+   commit `memory/history.json` — the workflow lands it on `main`).
 
 ## How dedup survives daily-updating sources
 

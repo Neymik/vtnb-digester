@@ -1,0 +1,38 @@
+name: Merge routine state into main
+
+# The Claude cloud routine can only push to claude/*-prefixed branches (the
+# "unrestricted branch pushes" toggle does not grant direct main pushes). This
+# workflow lands the routine's memory/history.json state commit onto main so the
+# next scheduled run — which clones main — sees the updated dedup state, then
+# deletes the routine branch.
+
+on:
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: write
+
+concurrency: merge-routine-state
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Merge routine branch into main and clean up
+        env:
+          BRANCH: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout main
+          git merge --no-edit "$SHA"
+          git push origin main
+          git push origin --delete "$BRANCH" || true
