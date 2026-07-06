@@ -47,9 +47,7 @@ Runs on Anthropic's cloud under your Claude subscription, on a weekly schedule.
 2. Create a routine at [claude.ai/code/routines](https://claude.ai/code/routines)
    (or `/schedule` in Claude Code) and connect it to your repo.
 3. **Environment variables:** set `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`.
-   Note: there is no secrets store yet — these sit in the routine's env config,
-   visible to anyone who can edit the routine.
-4. **Network access:** allowlist `api.telegram.org` (GitHub is already trusted).
+4. **Network access:** use "Full" for `api.telegram.org` and for actual news sources parsing.
 5. **State merge:** ensure **GitHub Actions is enabled** for your repo. The
    included `.github/workflows/merge-routine-state.yml` auto-merges the routine's
    `claude/*` state branch into `main`. (The routine can only push to `claude/*`
